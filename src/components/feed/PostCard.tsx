@@ -5,6 +5,7 @@ import { deletePost } from "../../api/posts";
 import { Avatar } from "../shared/Avatar";
 import { CommentSection } from "./CommentSection";
 import type { PostWithUser } from "../../types/schemas";
+import { useState } from "react";
 
 interface PostCardProps {
   post: PostWithUser;
@@ -21,13 +22,19 @@ export function PostCard({ post }: PostCardProps) {
 
   const isOwner = currentUser?.id === post.userId;
 
+  const [isDeleting, setIsDeleting] = useState(false);
+
   const handleDelete = async () => {
+    setIsDeleting(true);
+
     if (!confirm("Delete this post?")) return;
     try {
       await deletePost(post.id);
       setPosts((prev) => prev.filter((p) => p.id !== post.id));
     } catch {
       alert("Failed to delete post");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -48,6 +55,7 @@ export function PostCard({ post }: PostCardProps) {
             <div className="mt-3">
               <button
                 onClick={handleDelete}
+                disabled={isDeleting}
                 className="rounded-full px-2 py-1 text-sm text-red-500 hover:bg-red-50"
               >
                 Delete

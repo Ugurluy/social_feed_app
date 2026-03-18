@@ -1,6 +1,7 @@
 import { useAtomValue, useSetAtom } from "jotai";
 import { useNavigate } from "react-router";
 import { currentUserAtom } from "../../atoms/auth";
+import { searchQueryAtom } from "../../atoms/search";
 import { todosAtom } from "../../atoms/todos";
 import { Avatar } from "../shared/Avatar";
 import { TodoInput } from "../todos/TodoInput";
@@ -11,11 +12,13 @@ export function LeftSidebar() {
   const setCurrentUser = useSetAtom(currentUserAtom);
   const todos = useAtomValue(todosAtom);
   const navigate = useNavigate();
+  const setSearchQuery = useSetAtom(searchQueryAtom);
 
   const myTodoCount = todos.filter((t) => t.userId === currentUser?.id).length;
 
   const handleSwitchUser = () => {
     setCurrentUser(null);
+    setSearchQuery("");
     navigate("/");
   };
 

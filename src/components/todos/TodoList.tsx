@@ -2,6 +2,7 @@ import { useAtomValue, useSetAtom } from "jotai";
 import { todosAtom } from "../../atoms/todos";
 import { currentUserAtom } from "../../atoms/auth";
 import { deleteTodo } from "../../api/todos";
+import { useState } from "react";
 
 export function TodoList() {
   const todos = useAtomValue(todosAtom);
@@ -9,13 +10,20 @@ export function TodoList() {
   const currentUser = useAtomValue(currentUserAtom);
 
   const myTodos = todos.filter((t) => t.userId === currentUser?.id);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (id: number) => {
+    setIsDeleting(true);
+
+    if (!confirm("Delete this post?")) return;
+
     try {
       await deleteTodo(id);
       setTodos((prev) => prev.filter((t) => t.id !== id));
     } catch {
       alert("Failed to delete todo");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -35,6 +43,7 @@ export function TodoList() {
           </span>
           <button
             onClick={() => handleDelete(todo.id)}
+            disabled={isDeleting}
             className="ml-2 text-xs text-red-400 hover:text-red-600"
           >
             ✕
